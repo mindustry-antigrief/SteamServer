@@ -2,6 +2,7 @@ import arc.ApplicationListener;
 import arc.Core;
 import arc.Events;
 import arc.util.Log;
+import arc.util.async.Threads;
 import com.codedisaster.steamworks.SteamAPI;
 import mindustry.Vars;
 import mindustry.game.EventType;
@@ -59,6 +60,7 @@ public class SteamServer extends Plugin{
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             if (!isShutdown[0]) {
                 SteamAPI.shutdown();
+                Threads.sleep(100);
             }
         }));
     }
