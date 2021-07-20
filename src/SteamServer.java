@@ -54,16 +54,12 @@ public class SteamServer extends Plugin{
 
         Events.on(EventType.DisposeEvent.class, event -> {
             SVars.net.closeServer();
-            Threads.sleep(100);
-            SteamAPI.shutdown();
             isShutdown[0] = true;
         });
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             if (!isShutdown[0]) {
                 SVars.net.closeServer();
-                Threads.sleep(100);
-                SteamAPI.shutdown();
             }
         }));
     }
