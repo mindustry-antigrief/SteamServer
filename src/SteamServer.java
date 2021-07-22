@@ -51,16 +51,14 @@ public class SteamServer extends Plugin {
         ohno.setAccessible(true);
         ohno.set(Vars.net, SVars.net = new SNet((Net.NetProvider) ohno.get(Vars.net)));
 
-        Events.on(EventType.ConnectPacketEvent.class, event -> {
-            NetConnection con = event.connection;
+        Events.on(EventType.PlayerJoin.class, event -> {
+            Player p = event.player;
 
-            if (!Strings.canParseInt(con.address)) { // Non-Steam connection
+            if (!Strings.canParseInt(p.ip())) { // Non-Steam connection
                 if (steamOnly) {
-                    Time.run(60, () -> {
-                        con.player.remove();
-                        Call.connect(con, "steam:" + SteamID.getNativeHandle(SVars.net.currentLobby), 0);
-                        Time.run(60, () -> con.kick("This server is in steam only mode, you can only connect by playing on steam!", 0));
-                    });
+                    Call.connect(p.con, "steam:" + SteamID.getNativeHandle(SVars.net.currentLobby), 0);
+                    Call.announce(p.con, "[scarlet]This server is in steam only mode, you can only connect by playing on steam!");
+                    p.remove();
                 }
             }
         });
