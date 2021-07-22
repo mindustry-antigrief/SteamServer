@@ -5,7 +5,6 @@ import arc.util.*;
 import com.codedisaster.steamworks.*;
 import com.codedisaster.steamworks.SteamMatchmaking.*;
 import com.codedisaster.steamworks.SteamNetworking.*;
-import mindustry.Vars;
 import mindustry.core.*;
 import mindustry.game.EventType.*;
 import mindustry.game.*;
@@ -35,7 +34,8 @@ public class SNet implements SteamNetworkingCallback, SteamMatchmakingCallback, 
     final CopyOnWriteArrayList<SteamConnection> connections = new CopyOnWriteArrayList<>();
     final IntMap<SteamConnection> steamConnections = new IntMap<>(); //maps steam ID -> valid net connection
 
-    SteamID currentLobby, currentServer;
+    public SteamID currentLobby;
+    private SteamID currentServer;
     Cons<Host> lobbyCallback;
     Runnable lobbyDoneCallback, joinCallback;
 
@@ -342,7 +342,7 @@ public class SNet implements SteamNetworkingCallback, SteamMatchmakingCallback, 
         }
 
         Log.info("Lobby @ created? @", result, steamID.getAccountID());
-        Log.info(SteamID.getNativeHandle(steamID));
+        Log.info("Full ID: " + SteamID.getNativeHandle(steamID));
         if(result == SteamResult.OK){
             currentLobby = steamID;
 
