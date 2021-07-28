@@ -7,9 +7,8 @@ import com.codedisaster.steamworks.SteamMatchmaking.*;
 import com.codedisaster.steamworks.SteamNetworking.*;
 import mindustry.core.*;
 import mindustry.game.EventType.*;
-import mindustry.game.*;
-import mindustry.net.ArcNetProvider.*;
 import mindustry.net.*;
+import mindustry.net.ArcNetProvider.*;
 import mindustry.net.Net.*;
 import mindustry.net.Packets.*;
 
@@ -292,45 +291,6 @@ public class SNet implements SteamNetworkingCallback, SteamMatchmakingCallback, 
                 //a client left
                 disconnectSteamUser(who);
             }
-        }
-    }
-
-    @Override
-    public void onLobbyMatchList(int matches){
-        Log.info("found @ matches", matches);
-
-        if(lobbyDoneCallback != null){
-            Seq<Host> hosts = new Seq<>();
-            for(int i = 0; i < matches; i++){
-                try{
-                    SteamID lobby = smat.getLobbyByIndex(i);
-                    String mode = smat.getLobbyData(lobby, "gamemode");
-                    //make sure versions are equal, don't list incompatible lobbies
-                    if(mode == null || mode.isEmpty() || (Version.build != -1 && Strings.parseInt(smat.getLobbyData(lobby, "version"), -1) != Version.build)) continue;
-                    Host out = new Host(
-                            -1, //invalid ping
-                            smat.getLobbyData(lobby, "name"),
-                            "steam:" + lobby.handle(),
-                            smat.getLobbyData(lobby, "mapname"),
-                            Strings.parseInt(smat.getLobbyData(lobby, "wave"), -1),
-                            smat.getNumLobbyMembers(lobby),
-                            Strings.parseInt(smat.getLobbyData(lobby, "version"), -1),
-                            smat.getLobbyData(lobby, "versionType"),
-                            Gamemode.valueOf(mode),
-                            smat.getLobbyMemberLimit(lobby),
-                            "",
-                            null
-                    );
-                    hosts.add(out);
-                }catch(Exception e){
-                    Log.err(e);
-                }
-            }
-
-            hosts.sort(Structs.comparingInt(h -> -h.players));
-            hosts.each(lobbyCallback);
-
-            lobbyDoneCallback.run();
         }
     }
 
