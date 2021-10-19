@@ -1,7 +1,7 @@
 {
   "name": "SteamServer",
   "author": "mindustry-antigrief",
-  "main": "SteamServer",
+  "main": "steamServer.SteamServer",
   "description": "Allows hosting proper servers on steam, you can even connect to them via the direct ip without steam.",
-  "version": 1.0
+  "version": 1.1
 }

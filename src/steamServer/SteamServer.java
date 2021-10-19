@@ -1,6 +1,7 @@
+package steamServer;
+
 import arc.*;
 import arc.util.*;
-import arc.util.io.*;
 import com.codedisaster.steamworks.*;
 import mindustry.*;
 import mindustry.game.*;
@@ -11,7 +12,7 @@ import mindustry.net.*;
 import java.lang.reflect.*;
 
 public class SteamServer extends Plugin {
-    boolean steamOnly = getConfig().exists() && getConfig().reads().bool();
+    boolean steamOnly = Core.settings.getBool("steamserver-steamonly", false);;
 
     @Override
     public void init() {
@@ -53,6 +54,10 @@ public class SteamServer extends Plugin {
 
         Events.on(EventType.PlayerJoin.class, event -> {
             Player p = event.player;
+            long steamID64 = SVars.net.steamConnections.get(Strings.parseInt(p.ip())).sid.handle();
+
+            Events.fire(new SteamVerificationEvent(p, steamID64));
+            Log.infoTag("VERIFICATION", "PLAYER:" + p + " | STEAMID64: " + steamID64);
 
             if (!Strings.canParseInt(p.ip())) { // Non-Steam connection
                 if (steamOnly) {
@@ -62,17 +67,28 @@ public class SteamServer extends Plugin {
                 }
             }
         });
+
+        Log.info("Initialized SteamServer!");
     }
 
     @Override
-    public void registerServerCommands(CommandHandler handler){
+    public void registerServerCommands(CommandHandler handler){ // FINISHME: This is just stupid
         Log.info("Run the steamonly command to toggle whether or not non-steam players can join.");
         handler.register("steamonly", "Toggles whether the server allows non-steam players", args -> {
             steamOnly ^= true;
-            Writes out = getConfig().writes();
-            out.bool(steamOnly);
-            out.close();
+            Core.settings.put("steamserver-steamonly", steamOnly);
             Log.info("SteamOnly has been set to: " + steamOnly);
         });
+    }
+
+    public static class SteamVerificationEvent {
+        public final Player player;
+        /** Null when not a steam connection */
+        public final long steamID64;
+
+        public SteamVerificationEvent(Player player, long steamID64) {
+            this.player = player;
+            this.steamID64 = steamID64;
+        }
     }
 }
